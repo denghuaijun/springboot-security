@@ -1,4 +1,3 @@
-/*
 package com.dhj.security.springboot.security.config;
 
 import com.dhj.security.springboot.security.dao.UserDao;
@@ -6,27 +5,24 @@ import com.dhj.security.springboot.security.model.SysPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import java.util.List;
 
-*/
 /**
- * spring security 核心配置类 使用web授权
- *//*
-
+ * spring security 核心配置类，使用方法授权
+ */
 @Configuration
 @EnableWebSecurity
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableGlobalMethodSecurity(prePostEnabled = true)//开启方法授权
+public class SpringSecurityConfigByMethod extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDao userDao;
     //定义存储用户信息，作为登陆认证
@@ -47,8 +43,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
     //安全请求验证授权，相当于session中的拦截器功能
 
-    */
-/**
+    /**
      * 要注意设置的前后顺序，放在前面的要具体否则就会被拦截
      * .antMatchers("/res/**").authenticated() 这个放在前面就不会进行后续的权限判断了
      *   //注明拥有权限标识p1才能访问res1资源服务
@@ -59,23 +54,20 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      *
      * @param http
      * @throws Exception
-     *//*
-
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry expressionInterceptUrlRegistry = http.csrf().disable().
                 authorizeRequests();
-            */
-/*    //注明拥有权限标识p1才能访问res1资源服务
+            /*    //注明拥有权限标识p1才能访问res1资源服务
                 .antMatchers("/res/res1").hasAuthority("r1")
                 //注明拥有权限标识p2才能访问res2资源服务
-                .antMatchers("/res/res2").hasAuthority("r2")*//*
-
+                .antMatchers("/res/res2").hasAuthority("r2")*/
             //通过数据库来进行web授权
-             List<SysPermission> sysPermissions = userDao.queryAllPermission();
-             sysPermissions.forEach(sysPermission -> {
-                 expressionInterceptUrlRegistry.antMatchers(sysPermission.getPerUrl()).hasAuthority(sysPermission.getPerTag());
-             });
+//             List<SysPermission> sysPermissions = userDao.queryAllPermission();
+//             sysPermissions.forEach(sysPermission -> {
+//                 expressionInterceptUrlRegistry.antMatchers(sysPermission.getPerUrl()).hasAuthority(sysPermission.getPerTag());
+//             });
              //将以请求路径以/res开头的请求路径都需要通过认证才能访问，
                 expressionInterceptUrlRegistry.antMatchers("/res/**").authenticated()
                 //其它的请求放开权限
@@ -100,4 +92,3 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
     }
 }
-*/
